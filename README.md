@@ -36,4 +36,4 @@ $ npm run build
 
 live2dcubismcore.min.js 是运行时的核心文件，不可缺少。
 
-具体效果可以参考我的[个人站点](https://yuweizzz.github.io/)
+具体效果可以参考我的[个人站点](https://yuweizzz.github.io/)。
