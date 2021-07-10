@@ -1,0 +1,19 @@
+{
+  "name": "customlive2d",
+  "version": "1.0.0",
+  "description": "Custom live2D Model in your site",
+  "main": "Main.js",
+  "scripts": {
+    "build": "webpack --mode production --config webpack.config.js"
+  },
+  "author": "yuweizzz",
+  "license": "MIT",
+  "dependencies": {
+    "pixi-live2d-display": "^0.3.1",
+    "pixi.js": "^5.3.10",
+    "webpack": "^4.42.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.7.2"
+  }
+}
