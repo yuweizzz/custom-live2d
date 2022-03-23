@@ -26,6 +26,8 @@ function CreateCanvas () {
 	CanvasNode.style.left = "0";
 	CanvasNode.style.bottom = "0";
 	CanvasNode.style.position = "fixed";
+        // for custom application
+	CanvasNode.style.zIndex = "5";
 	document.body.appendChild(CanvasNode);
 	console.log('Init Canvas ...');
 }
@@ -86,6 +88,9 @@ function Handler () {
                 const defaultmodel = await LoadModel(ModelList[this.ModelName]);
                 this.Application.stage.addChild(defaultmodel);
                 this.Application.stage.addChild(ModelSwitch);
+                // default hidden icon
+                ModelSwitch.alpha = 0;
+                ShowSwitch.alpha = 0;
                 ModelSwitch.on('mousedown', async () => {
                     this.ModelName = GetNextModel(this.ModelName)
                     this.Application.stage.removeChildAt(0);
@@ -147,6 +152,11 @@ function Handler () {
     }
     else {
         CurrentHandler.ModelName = localStorage.getItem('current-live2d-model');
+    }
+    // disable live2d in mobile
+    if (window.innerWidth < 768){
+        CurrentHandler.Show = "false";
+        localStorage.setItem('show-live2d', "false");
     }
     if(!localStorage.getItem('show-live2d')){
         CurrentHandler.Show = DefaultShow;
