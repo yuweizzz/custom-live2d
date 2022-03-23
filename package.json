@@ -7,7 +7,6 @@
     "build": "webpack --mode production --config webpack.config.js"
   },
   "author": "yuweizzz",
-  "license": "MIT",
   "dependencies": {
     "pixi-live2d-display": "^0.3.1",
     "pixi.js": "^5.3.10",
