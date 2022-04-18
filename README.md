@@ -1,6 +1,6 @@
-# CustomLive2d
+# custom-live2d
 
-一个简易的网页 live2D 运行插件。
+一个在 Web 页面上运行 live2D 模型的简易插件。
 
 ## 主要功能
 
