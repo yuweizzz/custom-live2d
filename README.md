@@ -13,14 +13,13 @@
 - [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
 - webpack
 
-## 使用要点
-
-- 下载自己想要想要运行的 Live2D 模型。
-- 如果需要支持动态交互，需要修改模型 model3.json 的 motion 命名为 Action 。（Main.js - 43行）
-- 修改 Resources.js 中相关的配置，主要是关于模型的显示配置和路径。
-- 如果有需要可以自行修改 Main.js 中的画布大小。（Main.js - 84行）
-
 ## 使用方法
+
+下载自己想要想要运行的 Live2D 模型，修改 Resources.js 中相关的配置，配置项可以影响显示的内容：
+
+- `Configs.Canvas.Actived` 定义显示模型时的画布大小和图标的位置信息。
+- `Configs.DefaultModel` 和 `Configs.Show` 定义页面载入后是否显示模型和需要显示的模型， `Configs.DefaultModel` 应该是 `Configs.Models` 中的 key ，而 `Configs.Show` 只能是 `'true'` 和 `'false'` 两个字符值中的一个。
+- `Configs.Models` 可以定义多个模型，具体定义模型在画布中的偏移坐标和缩放比例， `Configs.Models.uri` 指定模型所在的资源路径，通过所在站点来拼接完整的 url 。交互动作在 `Configs.Models.motion` 指定，这个值应该来自 model3.json 中 `FileReferences.Motions` 中的 key 。
 
 ``` bash
 $ npm install

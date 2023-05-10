@@ -1,26 +1,12 @@
 import * as PIXI from 'pixi.js';
-import {
-	Ticker
-}
-from '@pixi/ticker';
-import {
-	Live2DModel
-}
-from 'pixi-live2d-display/lib/cubism4';
+import { Ticker } from '@pixi/ticker';
+import { Live2DModel } from 'pixi-live2d-display/lib/cubism4';
 
 Live2DModel.registerTicker(Ticker);
 
-import {
-	ModelSwitchIcon,
-	ShowSwitchIcon,
-	ModelList,
-	DefaultModel,
-	DefaultShow
-}
-from './Resources.js';
+import { Configs, SwitchIconContext, ExitIconContext } from './Resources.js';
 
 function CreateCanvas () {
-	var DivNode = document.createElement("div");
 	var CanvasNode = document.createElement("canvas");
 	CanvasNode.id = "canvas";
 	CanvasNode.style.left = "0";
@@ -32,40 +18,37 @@ function CreateCanvas () {
 	console.log('Init Canvas ...');
 }
 
-async function LoadModel (Name) {
-    const fullpath = 
-        document.location.protocol + "//" + document.location.host + Name.path
-    const model = await Live2DModel.from(fullpath);
-    model.scale.set(Name.scale);
-    model.x = Name.x;
-    model.y = Name.y;
+async function LoadModel (m) {
+    const url = document.location.protocol + "//" + document.location.host + m.uri
+    const model = await Live2DModel.from(url);
+    model.scale.set(m.scale);
+    model.x = m.x;
+    model.y = m.y;
     model.interactive = true;
     model.buttonMode = true;
     model.on('mousedown', () => {
-        model.motion('Action');
+        model.motion(m.motion);
     });
     return model;
 }
 
-function LoadIcon (conf) {
-    const texture = new PIXI.Texture.from(conf.code);
-    const result = new PIXI.Sprite(texture);
-    result.interactive = true;
-    result.buttonMode = true;
-    result.x = conf.x;
-    result.y = conf.y;
-    result.scale.set(conf.scale);
-    return result;
+function LoadIcon (context, i) {
+    const texture = new PIXI.Texture.from(context);
+    const sprite = new PIXI.Sprite(texture);
+    sprite.interactive = true;
+    sprite.buttonMode = true;
+    sprite.x = i.x;
+    sprite.y = i.y;
+    sprite.scale.set(i.scale);
+    return sprite;
 }
 
-function GetNextModel (modelname) {
-    var value = Object.keys(ModelList)
-        .indexOf(modelname);
+function GetNextModel (map, key) {
+    const list = Object.keys(map);
+    var value = list.indexOf(key);
     value += 1;
-    var index =
-        value > Object.keys(ModelList)
-        .length - 1 ? 0 : value;
-    return Object.keys(ModelList)[index];
+    var index = value > list.length - 1 ? 0 : value;
+    return list[index];
 }
 
 function Handler () {
@@ -80,47 +63,50 @@ function Handler () {
         set: async function (value) {
             Show = value
             localStorage.setItem('show-live2d', value);
-            if (value=="true"){
-                const ModelSwitch = LoadIcon(ModelSwitchIcon);
-                const ShowSwitch = LoadIcon(ShowSwitchIcon);
-                this.Application.renderer.resize(330, 550);
+            if (value === "true"){
+                // load
+                const SwitchIcon = LoadIcon(SwitchIconContext, Configs.Canvas.Actived.SwitchIcon);
+                const ExitIcon = LoadIcon(ExitIconContext, Configs.Canvas.Actived.ExitIcon);
+                const currentModel = await LoadModel(Configs.Models[this.ModelName]);
+                // canvas init
+                this.Application.renderer.resize(Configs.Canvas.Actived.width, Configs.Canvas.Actived.height);
                 this.Application.stage.interactive = true;
-                const defaultmodel = await LoadModel(ModelList[this.ModelName]);
-                this.Application.stage.addChild(defaultmodel);
-                this.Application.stage.addChild(ModelSwitch);
-                // default hidden icon
-                ModelSwitch.alpha = 0;
-                ShowSwitch.alpha = 0;
-                ModelSwitch.on('mousedown', async () => {
-                    this.ModelName = GetNextModel(this.ModelName)
+                // model
+                this.Application.stage.addChild(currentModel);
+                // SwitchIcon
+                this.Application.stage.addChild(SwitchIcon);
+                SwitchIcon.alpha = 0;
+                SwitchIcon.on('mousedown', async () => {
+                    this.ModelName = GetNextModel(Configs.Models, this.ModelName)
                     this.Application.stage.removeChildAt(0);
-                    const newmodel = await LoadModel(ModelList[this.ModelName]);
-                    this.Application.stage.addChildAt(newmodel, 0);
+                    const nextModel = await LoadModel(Configs.Models[this.ModelName]);
+                    this.Application.stage.addChildAt(nextModel, 0);
                 })
-                this.Application.stage.addChild(ShowSwitch);
-                ShowSwitch.on('mousedown', () => {
+                // ExitIcon
+                this.Application.stage.addChild(ExitIcon);
+                ExitIcon.alpha = 0;
+                ExitIcon.on('mousedown', () => {
                     this.Application.stage.removeChildAt(0);
-                    this.Application.stage.removeChild(ModelSwitch);
-                    this.Application.stage.removeChild(ShowSwitch);
+                    this.Application.stage.removeChild(SwitchIcon);
+                    this.Application.stage.removeChild(ExitIcon);
                     this.Show = "false";
                 })
+                // canvas event
                 this.Application.stage.on("mouseover",() => {
-                    ModelSwitch.alpha = 1;
-                    ShowSwitch.alpha = 1;
+                    SwitchIcon.alpha = 1;
+                    ExitIcon.alpha = 1;
                 })
                 this.Application.stage.on("mouseout",() => {
-                    ModelSwitch.alpha = 0;
-                    ShowSwitch.alpha = 0;
+                    SwitchIcon.alpha = 0;
+                    ExitIcon.alpha = 0;
                 })
             }
             else {
-                const ModelSwitch = LoadIcon(ModelSwitchIcon);
-                this.Application.renderer.resize(45, 40);
-                ModelSwitch.y = 0;
-                ModelSwitch.x = 5;
-                this.Application.stage.addChild(ModelSwitch);
-                ModelSwitch.on('mousedown', () => {
-                    this.Application.stage.removeChild(ModelSwitch);
+                const SwitchIcon = LoadIcon(SwitchIconContext, Configs.Canvas.Closed.SwitchIcon);
+                this.Application.renderer.resize(Configs.Canvas.Closed.width, Configs.Canvas.Closed.height);
+                this.Application.stage.addChild(SwitchIcon);
+                SwitchIcon.on('mousedown', () => {
+                    this.Application.stage.removeChild(SwitchIcon);
                     this.Show = "true";
                 })
             }
@@ -148,7 +134,7 @@ function Handler () {
     const CurrentHandler = new Handler();
     CurrentHandler.Application = app;
     if(!localStorage.getItem('current-live2d-model')){
-        CurrentHandler.ModelName = DefaultModel;
+        CurrentHandler.ModelName = Configs.DefaultModel;
     }
     else {
         CurrentHandler.ModelName = localStorage.getItem('current-live2d-model');
@@ -159,7 +145,7 @@ function Handler () {
         localStorage.setItem('show-live2d', "false");
     }
     if(!localStorage.getItem('show-live2d')){
-        CurrentHandler.Show = DefaultShow;
+        CurrentHandler.Show = Configs.Show;
     }
     else {
         CurrentHandler.Show = localStorage.getItem('show-live2d');
