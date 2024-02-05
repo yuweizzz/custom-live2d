@@ -10,7 +10,7 @@
   "dependencies": {
     "pixi-live2d-display": "^0.3.1",
     "pixi.js": "^5.3.10",
-    "webpack": "^4.42.0"
+    "webpack": "^5.90.1"
   },
   "devDependencies": {
     "webpack-cli": "^4.7.2"
