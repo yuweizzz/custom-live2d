@@ -27,7 +27,7 @@ const Configs = {
             },
         },
     },
-    Show: "true",
+    Show: "false",
     DefaultModel: "Javelin",
     Models: {
         "Javelin": {
