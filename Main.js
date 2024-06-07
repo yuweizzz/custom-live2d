@@ -7,23 +7,23 @@ Live2DModel.registerTicker(Ticker);
 import { Configs, SwitchIconContext, ExitIconContext } from './Resources.js';
 
 function CreateCanvas () {
-    var CanvasNode = document.createElement("canvas");
-    CanvasNode.id = "canvas";
-    CanvasNode.style.left = "0";
-    CanvasNode.style.bottom = "0";
-    CanvasNode.style.position = "fixed";
-    // for custom application
-    CanvasNode.style.zIndex = "5";
-    document.body.appendChild(CanvasNode);
-    console.log('Init Canvas ...');
+	var CanvasNode = document.createElement("canvas");
+	CanvasNode.id = "canvas";
+	CanvasNode.style.left = "0";
+	CanvasNode.style.bottom = "0";
+	CanvasNode.style.position = "fixed";
+        // for custom application
+	CanvasNode.style.zIndex = "5";
+	document.body.appendChild(CanvasNode);
+	console.log('Init Canvas ...');
 }
 
 async function LoadModel (m) {
     const url = document.location.protocol + "//" + document.location.host + m.uri
     const model = await Live2DModel.from(url);
-    model.scale.set(m.scale * window.devicePixelRatio);
-    model.x = m.x * window.devicePixelRatio;
-    model.y = m.y * window.devicePixelRatio;
+    model.scale.set(m.scale);
+    model.x = m.x;
+    model.y = m.y;
     model.interactive = true;
     model.buttonMode = true;
     model.on('mousedown', () => {
@@ -37,9 +37,9 @@ function LoadIcon (context, i) {
     const sprite = new PIXI.Sprite(texture);
     sprite.interactive = true;
     sprite.buttonMode = true;
-    sprite.x = i.x * window.devicePixelRatio;
-    sprite.y = i.y * window.devicePixelRatio;
-    sprite.scale.set(i.scale * window.devicePixelRatio);
+    sprite.x = i.x;
+    sprite.y = i.y;
+    sprite.scale.set(i.scale);
     return sprite;
 }
 
@@ -69,7 +69,7 @@ function Handler () {
                 const ExitIcon = LoadIcon(ExitIconContext, Configs.Canvas.Actived.ExitIcon);
                 const currentModel = await LoadModel(Configs.Models[this.ModelName]);
                 // canvas init
-                this.Application.renderer.resize(Configs.Canvas.Actived.width * window.devicePixelRatio, Configs.Canvas.Actived.height * window.devicePixelRatio);
+                this.Application.renderer.resize(Configs.Canvas.Actived.width, Configs.Canvas.Actived.height);
                 this.Application.stage.interactive = true;
                 // model
                 this.Application.stage.addChild(currentModel);
@@ -103,7 +103,7 @@ function Handler () {
             }
             else {
                 const SwitchIcon = LoadIcon(SwitchIconContext, Configs.Canvas.Closed.SwitchIcon);
-                this.Application.renderer.resize(Configs.Canvas.Closed.width * window.devicePixelRatio, Configs.Canvas.Closed.height * window.devicePixelRatio);
+                this.Application.renderer.resize(Configs.Canvas.Closed.width, Configs.Canvas.Closed.height);
                 this.Application.stage.addChild(SwitchIcon);
                 SwitchIcon.on('mousedown', () => {
                     this.Application.stage.removeChild(SwitchIcon);
@@ -127,7 +127,7 @@ function Handler () {
     console.log('Main Function Run ...');
     CreateCanvas();
     const app = new PIXI.Application({
-        view: document.getElementById("canvas"),
+        view:document.getElementById("canvas"),
         autoStart: true,
         transparent: true,
     });
